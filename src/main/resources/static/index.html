@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Forecast | Data Visualization Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .result-container {
+            transition: all 0.5s ease;
+        }
+        .loader {
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="py-8 px-4">
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">Salary Forecast</h1>
+        <p class="text-gray-600 max-w-lg mx-auto">Upload your salary data and visualize future trends with our advanced forecasting tools</p>
+    </header>
+
+    <!-- Main Card -->
+    <div class="card rounded-2xl shadow-xl p-8 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Left Column - Inputs -->
+            <div>
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-chart-line text-purple-500 mr-2"></i>
+                        Forecast Settings
+                    </h2>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2" for="forecastTypeSelect">
+                            Forecast Type
+                        </label>
+                        <div class="relative">
+                            <select id="forecastTypeSelect" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white">
+                                <option value="linear">Linear Forecast</option>
+                                <option value="poli">Polynomial Forecast</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">Choose between linear or polynomial forecasting models</p>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2">
+                            Upload Data File
+                        </label>
+                        <div class="file-input-wrapper">
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-all duration-300 hover:border-purple-400 hover:bg-purple-50">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-3"></i>
+                                <p class="text-gray-600 mb-1">Drag & drop your file here</p>
+                                <p class="text-gray-500 text-sm mb-3">or</p>
+                                <span class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium inline-block">
+                                        <i class="fas fa-folder-open mr-2"></i>Browse Files
+                                    </span>
+                                <input type="file" id="fileInput" class="cursor-pointer">
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">Supported formats: JSON files with salary data</p>
+                    </div>
+
+                    <button id="sendBtn" class="btn-primary w-full py-3 rounded-lg text-white font-semibold text-lg shadow-md flex items-center justify-center">
+                        <i class="fas fa-chart-bar mr-2"></i>Generate Forecast
+                    </button>
+                </div>
+
+                <!-- Info Section -->
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <h3 class="font-medium text-blue-800 flex items-center mb-2">
+                        <i class="fas fa-info-circle mr-2"></i>How it works
+                    </h3>
+                    <ul class="text-blue-700 text-sm list-disc pl-5 space-y-1">
+                        <li>Upload your historical salary data in JSON format</li>
+                        <li>Select your preferred forecasting model</li>
+                        <li>Generate and visualize your salary forecast</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Column - Results -->
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-image text-purple-500 mr-2"></i>
+                    Forecast Visualization
+                </h2>
+
+                <div id="resultContainer" class="result-container bg-gray-100 rounded-xl p-6 min-h-[400px] flex flex-col items-center justify-center text-gray-500">
+                    <i class="fas fa-chart-area text-5xl mb-4 text-gray-400"></i>
+                    <p class="text-center">Your forecast visualization will appear here after processing</p>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loadingIndicator" class="hidden mt-6 text-center">
+                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto mb-4"></div>
+                    <p class="text-gray-600">Processing your data and generating forecast...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-gray-600 text-sm">
+        <p>Salary Forecast Tool &copy; 2023 | Data Visualization & Analytics</p>
+    </footer>
+</div>
+
+<script>
+    document.getElementById("sendBtn").onclick = async function () {
+        const fileInput = document.getElementById("fileInput");
+        const forecastType = document.getElementById("forecastTypeSelect").value;
+        const resultContainer = document.getElementById("resultContainer");
+        const loadingIndicator = document.getElementById("loadingIndicator");
+
+        if (fileInput.files.length === 0) {
+            showNotification("Please select a file first!", "error");
+            return;
+        }
+
+        // Show loading state
+        loadingIndicator.classList.remove("hidden");
+        resultContainer.innerHTML = `
+                <div class="text-center">
+                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto mb-4"></div>
+                    <p class="text-gray-600">Processing your data and generating forecast...</p>
+                </div>
+            `;
+
+        try {
+            const file = fileInput.files[0];
+            const text = await file.text();
+            const payload = JSON.parse(text);
+
+            const url = `/forecast?forecast_type=${forecastType}`;
+
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("Server error");
+            }
+
+            const blob = await response.blob();
+            const imgUrl = URL.createObjectURL(blob);
+
+            const img = document.createElement("img");
+            img.src = imgUrl;
+            img.alt = "Salary Forecast Result";
+            img.className = "w-full h-auto rounded-lg shadow-md fade-in";
+
+            setTimeout(() => {
+                resultContainer.innerHTML = "";
+                resultContainer.appendChild(img);
+                loadingIndicator.classList.add("hidden");
+                showNotification("Forecast generated successfully!", "success");
+            }, 800);
+
+        } catch (error) {
+            loadingIndicator.classList.add("hidden");
+            resultContainer.innerHTML = `
+                    <div class="text-center text-red-500">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            showNotification("Failed to generate forecast. Please try again.", "error");
+        }
+    };
+
+    const fileInput = document.getElementById("fileInput");
+    const fileInputWrapper = fileInput.closest('.file-input-wrapper');
+
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            fileInputWrapper.querySelector('p').textContent = this.files[0].name;
+            fileInputWrapper.querySelector('span').textContent = "Change File";
+            fileInputWrapper.querySelector('.fa-cloud-upload-alt').classList.add('text-green-500');
+        }
+    });
+
+    fileInputWrapper.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('border-purple-500', 'bg-purple-50');
+    });
+
+    fileInputWrapper.addEventListener('dragleave', function() {
+        this.classList.remove('border-purple-500', 'bg-purple-50');
+    });
+
+    fileInputWrapper.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('border-purple-500', 'bg-purple-50');
+        fileInput.files = e.dataTransfer.files;
+        fileInput.dispatchEvent(new Event('change'));
+    });
+
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg text-white font-medium z-50 fade-in ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`;
+        notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.remove('fade-in');
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 500);
+        }, 3000);
+    }
+</script>
+</body>
+</html>
